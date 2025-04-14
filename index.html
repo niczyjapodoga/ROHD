@@ -106,7 +106,30 @@
     }
   });
 </script>
-  <br><br>
+  <br>
+  <div class="videos">
+  <div class="video-container">
+    <video id="video1" muted loop>
+      <source src="video/filmik1.mp4" type="video/mp4">
+      Twoja przeglądarka nie obsługuje wideo.
+    </video>
+    <div class="controls">
+      <button onclick="document.getElementById('video1').play()">▶️ Start</button>
+      <button onclick="document.getElementById('video1').pause()">⏸️ Pauza</button>
+    </div>
+  </div>
+
+  <div class="video-container">
+    <video id="video2" muted loop>
+      <source src="video/filmik2.mp4" type="video/mp4">
+      Twoja przeglądarka nie obsługuje wideo.
+    </video>
+    <div class="controls">
+      <button onclick="document.getElementById('video2').play()">▶️ Start</button>
+      <button onclick="document.getElementById('video2').pause()">⏸️ Pauza</button>
+    </div>
+  </div>
+</div>
 
 
 </body>
