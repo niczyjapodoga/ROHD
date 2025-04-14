@@ -79,6 +79,20 @@
     });
   });
 </script>
+  <script>
+  const rode = document.getElementById("rode");
+  const rodeSound = new Audio("victory.mp3");
+
+  rode.addEventListener("click", () => {
+    rodeSound.currentTime = 0;
+    rodeSound.play();
+
+    rode.style.transform = "scale(1.1)";
+    setTimeout(() => {
+      rode.style.transform = "scale(1)";
+    }, 150);
+  });
+</script>
 
   </script>
 
