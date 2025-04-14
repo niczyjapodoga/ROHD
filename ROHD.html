@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>ROHD</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div>
+<p>
+  <a href="index.html">
+  <img src="chomiczek.png" alt="chomik" id="chomik">
+</a>
+</div>
+
+  <h1>ROHD</h1>
+
+  <h2>Rohde & Schwarz</h2>
+  <p>Rohde & Schwarz to niemiecka firma specjalizująca się w produkcji sprzętu elektronicznego, w tym urządzeń pomiarowych, systemów komunikacyjnych i rozwiązań dla przemysłu obronnego.</p>
+  <img src="rodeki.png" alt="Rohde & Schwarz">
+
+  <h2>Rhode Island</h2>
+  <p>Rhode Island to najmniejszy stan w USA, znany z pięknych plaż, historycznych miast i bogatej kultury.</p>
+  <img src="rhode.png" alt="Rhode Island">
+
+  <h2>Dexter Morgan</h2>
+  <p>Dexter Morgan to fikcyjna postać z serialu „Dexter”, pracujący jako analityk krwi dla policji, który prowadzi podwójne życie jako seryjny morderca.</p>
+  <img src="dexter-morgan-dexter.gif" alt="Dexter Morgan">
+
+  <h2>Osoby z arbuzami</h2>
+  <p>Poniżej znajdują się neutralne zdjęcia osób jedzących arbuzy:</p>
+  <img src="wel.jpg" alt="Mężczyzna jedzący arbuz">
+  <img src="istockphoto-178988981-612x612.jpg" alt="Rhode sie zajada">
+
+  <div class="nav-buttons">
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'});">Na górę</button>
+    <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});">Na dół</button>
+  </div>
+
+ <script>
+    const chomik = document.getElementById("chomik");
+    window.addEventListener("scroll", () => {
+      const scrollY = window.scrollY;
+      chomik.style.transform = `translateY(${scrollY}px) rotate(${scrollY * 1.6}deg)`;
+    });
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function scrollToBottom() {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+  // Obsługa dźwięków i animacji
+  const images = document.querySelectorAll(".clickable-img");
+  const sound = new Audio("sounds/click.mp3");
+
+  images.forEach((img) => {
+    img.style.transition = "transform 0.3s ease";
+
+    img.addEventListener("click", () => {
+      // Odtwarzanie dźwięku
+      sound.currentTime = 0; // resetuj dźwięk
+      sound.play();
+
+      // Animacja – lekki skok
+      img.style.transform = "scale(1.1)";
+      setTimeout(() => {
+        img.style.transform = "scale(1)";
+      }, 150);
+    });
+  });
+</script>
+
+  </script>
+
+</body>
+</html>

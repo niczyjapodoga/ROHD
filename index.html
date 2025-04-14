@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Rode</title>
+  <link rel="stylesheet" href="lowrodefade.css">
+  <style>
+    body {
+      background-image: url('rodek.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: Arial, sans-serif;
+      color: #333;
+      text-align: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .btn {
+      padding: 15px 30px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+    .main-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+    }
+    .gif {
+      width: 150px;
+      animation: float 3s ease-in-out infinite;
+    }
+    .main-img {
+      max-width: 50%;
+      height: auto;
+      animation: fadeIn 2s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>- Niskie storzkowe zanikanie</h2>
+
+  <div class="main-content">
+    <img src="dexter-morgan-dexter.gif" alt="Gif lewy" class="gif">
+    <img src="rode.jpg" alt="Obrazek Rode" class="main-img">
+    <img src="dexter-morgan-dexter.gif" alt="Gif prawy" class="gif">
+  </div>
+
+  <p>- Kolego a co to za granie na lekcji?</p>
+
+  <button class="btn" onclick="window.location.href='ROHD.html'">
+    NIE KLIKAJ!!!
+  </button>
+
+  <br><br>
+
+  <a href="http://www.counterliczniki.com" target="_blank">http://www.counterliczniki.com</a>
+  <script type="text/javascript" src="https://www.counterliczniki.com/auth.php?id=09d94f8bb45b000f66717c750acd53491f846741"></script>
+  <script type="text/javascript" src="https://www.counterliczniki.com/pl/home/counter/1327369/t/3"></script>
+
+</body>
+</html>
