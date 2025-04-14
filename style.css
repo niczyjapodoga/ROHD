@@ -69,3 +69,19 @@ img {
   background: #ff3b30;
   transform: scale(1.05);
 }
+.rode-story {
+  background: linear-gradient(to right, #fefcea, #f1da36);
+  padding: 2rem;
+  border-radius: 20px;
+  margin: 2rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.rode-story img {
+  max-width: 300px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
