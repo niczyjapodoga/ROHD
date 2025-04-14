@@ -105,21 +105,39 @@
     .controls button:hover {
       background-color: #666;
     }
+
+    .audio-controls {
+      margin-top: 20px;
+    }
+
+    .audio-controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .audio-controls button:hover {
+      background-color: #666;
+    }
   </style>
 </head>
 
 <body>
 
   <!-- DŹWIĘK -->
-  <audio id="bg-music" autoplay loop muted>
+  <audio id="bg-music" autoplay loop>
     <source src="lonely-lonely-rampage-made-with-Voicemod.mp3" type="audio/mpeg">
   </audio>
 
   <script>
     window.addEventListener('load', () => {
       const audio = document.getElementById("bg-music");
-      audio.muted = false;
-      audio.volume = 0.5;
+      audio.muted = false; // Usuwamy wyciszenie
+      audio.volume = 0.5; // Ustawiamy głośność na 50%
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
@@ -127,6 +145,18 @@
           .catch(error => console.warn("Autoplay zablokowany:", error));
       }
     });
+
+    // Funkcja do pauzowania i wznawiania dźwięku
+    let isPlaying = true;
+    function toggleAudio() {
+      const audio = document.getElementById("bg-music");
+      if (isPlaying) {
+        audio.pause(); // Pauza
+      } else {
+        audio.play(); // Wznowienie odtwarzania
+      }
+      isPlaying = !isPlaying;
+    }
   </script>
 
   <h2>- Niskie storzkowe zanikanie</h2>
@@ -145,7 +175,7 @@
 
   <div class="videos">
     <div class="video-container">
-      <video id="video1" muted loop>
+      <video id="video1" loop>
         <source src="Download (4).mp4" type="video/mp4">
       </video>
       <div class="controls">
@@ -155,7 +185,7 @@
     </div>
 
     <div class="video-container">
-      <video id="video2" muted loop>
+      <video id="video2" loop>
         <source src="Download (5).mp4" type="video/mp4">
       </video>
       <div class="controls">
@@ -163,6 +193,13 @@
         <button onclick="document.getElementById('video2').pause()">⏸️ Pauza</button>
       </div>
     </div>
+  </div>
+
+  <!-- Kontrolki do dźwięku -->
+  <div class="audio-controls">
+    <button onclick="toggleAudio()">
+      <?php if (isPlaying) { ?>⏸️ Pauza Dźwięku<?php } else { ?>▶️ Wznów Dźwięk<?php } ?>
+    </button>
   </div>
 
 </body>
