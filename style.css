@@ -78,6 +78,7 @@ img {
 }
 
 .rode-story img {
+  background: linear-gradient(135deg, #ffd6f6, #d6f3ff);
   max-width: 300px;
   border-radius: 12px;
   margin-bottom: 1rem;
