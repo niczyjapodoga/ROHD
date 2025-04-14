@@ -16,6 +16,7 @@
       padding: 20px;
       overflow-x: hidden;
     }
+
     .btn {
       padding: 15px 30px;
       background-color: #4CAF50;
@@ -28,10 +29,12 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       margin-top: 20px;
     }
+
     .btn:hover {
       background-color: #45a049;
       transform: scale(1.05);
     }
+
     .main-content {
       display: flex;
       align-items: center;
@@ -39,16 +42,19 @@
       gap: 30px;
       margin-top: 20px;
     }
+
     .gif {
       width: 150px;
       animation: float 3s ease-in-out infinite;
     }
+
     .main-img {
       max-width: 50%;
       height: auto;
       animation: fadeIn 2s ease forwards;
       opacity: 0;
     }
+
     @keyframes fadeIn {
       0% {
         opacity: 0;
@@ -59,6 +65,7 @@
         transform: scale(1);
       }
     }
+
     @keyframes float {
       0%, 100% {
         transform: translateY(0);
@@ -67,15 +74,60 @@
         transform: translateY(-15px);
       }
     }
+
+    .video-container {
+      margin: 30px auto;
+    }
+
+    video {
+      width: 80%;
+      max-width: 600px;
+      border: 4px solid #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .controls {
+      margin-top: 10px;
+    }
+
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #444;
+      color: white;
+      border: none;
+    }
+
+    .controls button:hover {
+      background-color: #666;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- ⬇️ DŹWIĘK – WŁAŚCIWE MIEJSCE -->
-  <audio id="bg-music" autoplay loop>
+  <!-- DŹWIĘK -->
+  <audio id="bg-music" autoplay loop muted>
     <source src="lonely-lonely-rampage-made-with-Voicemod.mp3" type="audio/mpeg">
   </audio>
+
+  <script>
+    window.addEventListener('load', () => {
+      const audio = document.getElementById("bg-music");
+      audio.muted = false;
+      audio.volume = 0.5;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => console.log("Dźwięk gra 🚀"))
+          .catch(error => console.warn("Autoplay zablokowany:", error));
+      }
+    });
+  </script>
 
   <h2>- Niskie storzkowe zanikanie</h2>
 
@@ -90,47 +142,28 @@
   <button class="btn" onclick="window.location.href='ROHD.html'">
     NIE KLIKAJ!!!
   </button>
-  <script>
-  window.addEventListener('load', () => {
-    const audio = document.getElementById("bg-music");
-    audio.volume = 0.5; // np. 50%
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log("Dźwięk gra 🚀");
-        })
-        .catch(error => {
-          console.warn("Autoplay zablokowane ❌ przez przeglądarkę");
-        });
-    }
-  });
-</script>
-  <br>
+
   <div class="videos">
-  <div class="video-container">
-    <video id="video1" muted loop>
-      <source src="Download (4).mp4" type="video/mp4">
-      Twoja przeglądarka nie obsługuje wideo.
-    </video>
-    <div class="controls">
-      <button onclick="document.getElementById('video1').play()">▶️ Start</button>
-      <button onclick="document.getElementById('video1').pause()">⏸️ Pauza</button>
+    <div class="video-container">
+      <video id="video1" muted loop>
+        <source src="Download (4).mp4" type="video/mp4">
+      </video>
+      <div class="controls">
+        <button onclick="document.getElementById('video1').play()">▶️ Start</button>
+        <button onclick="document.getElementById('video1').pause()">⏸️ Pauza</button>
+      </div>
+    </div>
+
+    <div class="video-container">
+      <video id="video2" muted loop>
+        <source src="Download (5).mp4" type="video/mp4">
+      </video>
+      <div class="controls">
+        <button onclick="document.getElementById('video2').play()">▶️ Start</button>
+        <button onclick="document.getElementById('video2').pause()">⏸️ Pauza</button>
+      </div>
     </div>
   </div>
-
-  <div class="video-container">
-    <video id="video2" muted loop>
-      <source src="Download (5).mp4" type="video/mp4">
-      Twoja przeglądarka nie obsługuje wideo.
-    </video>
-    <div class="controls">
-      <button onclick="document.getElementById('video2').play()">▶️ Start</button>
-      <button onclick="document.getElementById('video2').pause()">⏸️ Pauza</button>
-    </div>
-  </div>
-</div>
-
 
 </body>
 </html>
