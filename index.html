@@ -90,7 +90,22 @@
   <button class="btn" onclick="window.location.href='ROHD.html'">
     NIE KLIKAJ!!!
   </button>
-  <button onclick="document.getElementById('bg-music').play()">🎵 Włącz muzykę</button>
+  <script>
+  window.addEventListener('load', () => {
+    const audio = document.getElementById("bg-music");
+    audio.volume = 0.5; // np. 50%
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log("Dźwięk gra 🚀");
+        })
+        .catch(error => {
+          console.warn("Autoplay zablokowane ❌ przez przeglądarkę");
+        });
+    }
+  });
+</script>
   <br><br>
 
 
