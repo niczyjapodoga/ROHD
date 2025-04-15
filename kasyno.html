@@ -127,7 +127,17 @@
 </head>
 <body>
   <h1>Kansino Offline</h1>
-  
+
+  <!-- Muzyka w tle -->
+  <audio id="bg-music" autoplay loop>
+    <source src="muzyka.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Przycisk pauzy/wznowienia -->
+  <div class="audio-controls">
+    <button onclick="toggleAudio()" id="audio-toggle-btn">⏸️ Pauza Dźwięku</button>
+  </div>
+
   <div class="casino-select">
     <label for="casino">Wybierz kasyno:</label>
     <select id="casino" onchange="updateCasinoTheme()">
@@ -137,7 +147,7 @@
       <option value="retro">Rodek Kansino</option>
     </select>
     <br><br>
-    <label for="bet">Postaw (żetony) ewentualnie swoją żone:</label>
+    <label for="bet">Postaw (żetony):</label>
     <input type="number" id="bet" min="1" value="10">
     <button id="spin-btn" onclick="playSlot()">Zakręć!</button>
   </div>
@@ -167,36 +177,33 @@
   <audio id="lose-sound" src="sounds/lose.mp3"></audio>
   <audio id="spin-sound" src="dice-sound-288763.mp3"></audio>
 
-  <script>
-     <audio id="bg-music" autoplay loop>
-    <source src="muzyka.mp3" type="audio/mpeg">
-  </audio>
-
+  <!-- Skrypt -->
   <script>
     window.addEventListener('load', () => {
       const audio = document.getElementById("bg-music");
-      audio.muted = false; // Usuwamy wyciszenie
-      audio.volume = 0.5; // Ustawiamy głośność na 50%
+      audio.muted = false;
+      audio.volume = 0.5;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise
-          .then(() => console.log("Dźwięk gra 🚀"))
-          .catch(error => console.warn("Autoplay zablokowany:", error));
+        playPromise.then(() => console.log("Dźwięk gra 🚀"))
+                   .catch(error => console.warn("Autoplay zablokowany:", error));
       }
     });
 
-    // Funkcja do pauzowania i wznawiania dźwięku
     let isPlaying = true;
     function toggleAudio() {
       const audio = document.getElementById("bg-music");
+      const button = document.getElementById("audio-toggle-btn");
       if (isPlaying) {
-        audio.pause(); // Pauza
+        audio.pause();
+        button.innerText = "▶️ Wznów Dźwięk";
       } else {
-        audio.play(); // Wznowienie odtwarzania
+        audio.play();
+        button.innerText = "⏸️ Pauza Dźwięku";
       }
       isPlaying = !isPlaying;
     }
-    
+
     const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
     let balance = 100;
     let cooldown = false;
@@ -259,14 +266,14 @@
           winClass = 'mega-win';
           fireworks = true;
           playSound('mega-win-sound');
-          showMegaWinVideo(); // ← dodano film
+          showMegaWinVideo();
         } else if (counts[key] === 5) {
           reward = bet * 10;
           winText = '🔥🔥 ULTRA WIN!!!! 🔥🔥';
           winClass = 'ultra-win';
           fireworks = true;
           playSound('mega-win-sound');
-          showMegaWinVideo(); // ← dodano film
+          showMegaWinVideo();
         }
       }
 
@@ -299,18 +306,17 @@
       sound.play();
     }
 
- function showMegaWinVideo() {
-  const video = document.getElementById('megaWinVideo');
-  video.style.display = 'block';
-  video.muted = false; // 🔈 dźwięk on!
-  video.currentTime = 0;
-  video.play();
-
-  setTimeout(() => {
-    video.pause();
-    video.style.display = 'none';
-  }, 4000);
-}
+    function showMegaWinVideo() {
+      const video = document.getElementById('megaWinVideo');
+      video.style.display = 'block';
+      video.muted = false;
+      video.currentTime = 0;
+      video.play();
+      setTimeout(() => {
+        video.pause();
+        video.style.display = 'none';
+      }, 4000);
+    }
 
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -352,3 +358,4 @@
   </script>
 </body>
 </html>
+
