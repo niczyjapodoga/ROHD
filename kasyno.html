@@ -128,9 +128,8 @@ ter<!DOCTYPE html>
 <body>
   <h1>Kansino Offline</h1>
 
-  <audio id="bg-music" autoplay loop>
-    <source src="muzyka.mp3" type="audio/mpeg">
-  </audio>
+ <audio id="bg-music" src="muzyka.mp3" loop></audio>
+<button id="music-btn" onclick="toggleMusic()">🎵 Włącz muzykę</button>
   
   <div class="casino-select">
     <label for="casino">Wybierz kasyno:</label>
@@ -161,7 +160,7 @@ ter<!DOCTYPE html>
   <canvas class="fireworks" id="fireworks"></canvas>
 
   <!-- Mega Win Video -->
-  <video id="megaWinVideo" autoplay loop>
+  <video id="megaWinVideo" autoplay>
     <source src="dexteredit.mp4" type="video/mp4">
   </video>
 
