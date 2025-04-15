@@ -1,10 +1,118 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kansino Offline</title>
-  <link rel="stylesheet" href="skrypt.css">
+  <style>
+    body {
+      background: linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #0000ff);
+      background-size: 400% 400%;
+      animation: bgShift 10s infinite;
+      color: #fff;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    @keyframes bgShift {
+      0% { background-position: 0 0; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0 0; }
+    }
+
+    h1 {
+      font-size: 4em;
+      color: #00ffff;
+      text-shadow: 0 0 10px #ff0, 0 0 20px #f0f;
+    }
+
+    .casino-select {
+      margin: 20px;
+    }
+
+    .slot-machine {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 30px 0;
+      font-size: 3em;
+    }
+
+    .slot-machine div {
+      background: #000;
+      padding: 20px;
+      border: 5px solid #fff;
+      border-radius: 10px;
+      animation: spinSym 0.3s ease-in-out;
+      box-shadow: 0 0 10px #fff;
+    }
+
+    @keyframes spinSym {
+      0% { transform: scale(0.5) rotateX(360deg); }
+      100% { transform: scale(1); }
+    }
+
+    .big-win, .mega-win, .ultra-win {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 0, 255, 0.8);
+      color: yellow;
+      font-size: 5em;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: winFlash 1s infinite;
+      text-shadow: 2px 2px 10px #000, 0 0 20px #fff;
+    }
+
+    @keyframes winFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .balance-info {
+      margin: 20px;
+      font-size: 1.5em;
+    }
+
+    #clown-face {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: clownLaugh 5s infinite;
+    }
+
+    @keyframes clownLaugh {
+      0%, 80% { transform: rotate(0); }
+      85% { transform: rotate(10deg); }
+      90% { transform: rotate(-10deg); }
+      95% { transform: rotate(10deg); }
+      100% { transform: rotate(0); }
+    }
+
+    .fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
   <h1>Kansino Offline</h1>
@@ -20,7 +128,7 @@
     <br><br>
     <label for="bet">Postaw (żetony):</label>
     <input type="number" id="bet" min="1" value="10">
-    <button onclick="playSlot()">Zakręć!</button>
+    <button id="spin-btn" onclick="playSlot()">Zakręć!</button>
   </div>
 
   <div class="balance-info">Stan konta: <span id="balance">100</span> żetonów</div>
@@ -46,6 +154,7 @@
   <script>
     const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
     let balance = 100;
+    let cooldown = false;
 
     function updateCasinoTheme() {
       const casino = document.getElementById('casino').value;
@@ -60,65 +169,80 @@
     }
 
     function playSlot() {
+      if (cooldown) return;
+      cooldown = true;
+      document.getElementById('spin-btn').disabled = true;
+      setTimeout(() => {
+        cooldown = false;
+        document.getElementById('spin-btn').disabled = false;
+      }, 3000);
+
       const bet = parseInt(document.getElementById('bet').value);
       if (bet > balance || bet <= 0) {
         alert("Nie masz wystarczająco żetonów lub nieprawidłowa stawka.");
         return;
       }
 
-      if (balance <= 0) {
-        alert("Brak żetonów! Gra zakończona.");
-        return;
-      }
-
-      const spinSound = document.getElementById("spin-sound");
-      spinSound.pause(); spinSound.currentTime = 0; spinSound.play();
+      document.getElementById("spin-sound").play();
 
       const slotElements = document.querySelectorAll('#slots .slot');
       const result = [];
-      slotElements.forEach(el => el.classList.add('spinning'));
 
-      setTimeout(() => {
-        slotElements.forEach(el => el.classList.remove('spinning'));
-        for (let i = 0; i < 5; i++) {
-          const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-          slotElements[i].textContent = symbol;
-          result.push(symbol);
+      for (let i = 0; i < 5; i++) {
+        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+        slotElements[i].textContent = symbol;
+        result.push(symbol);
+      }
+
+      const counts = {};
+      result.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
+
+      let reward = 0;
+      let fireworks = false;
+      let winText = '';
+      let winClass = '';
+
+      for (let key in counts) {
+        if (counts[key] === 3) {
+          reward = bet * 2;
+          winText = '🎉 BIG WIN! 🎉';
+          winClass = 'big-win';
+          playSound('win-sound');
+        } else if (counts[key] === 4) {
+          reward = bet * 5;
+          winText = '💥 MEGA WIN!!! 💥';
+          winClass = 'mega-win';
+          fireworks = true;
+          playSound('mega-win-sound');
+        } else if (counts[key] === 5) {
+          reward = bet * 10;
+          winText = '🔥🔥 ULTRA WIN!!!! 🔥🔥';
+          winClass = 'ultra-win';
+          fireworks = true;
+          playSound('mega-win-sound');
         }
+      }
 
-        const counts = {};
-        result.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
-
-        let output = 'Spróbuj jeszcze raz...';
-        let reward = 0;
-        let fireworks = false;
-
-        for (let key in counts) {
-          if (counts[key] === 3) {
-            reward = bet * 2;
-            output = '<div class="big-win">🎉 BIG WIN! 🎉</div>';
-            playSound("win-sound");
-          } else if (counts[key] >= 4) {
-            reward = bet * 5;
-            output = '<div class="mega-win">💥💥 MEGA WIN!!! 💥💥</div>';
-            fireworks = true;
-            playSound("mega-win-sound");
-          }
-        }
-
-        if (reward === 0) {
-          balance -= bet;
-          playSound("lose-sound");
-        } else {
-          balance += reward;
-        }
-
-        document.getElementById('balance').textContent = balance;
-        document.getElementById('result').innerHTML = output;
-        updateClownFace(balance);
+      if (reward > 0) {
+        balance += reward;
+        showWinScreen(winText, winClass);
         if (fireworks) startFireworks();
+      } else {
+        balance -= bet;
+        playSound('lose-sound');
+      }
 
-      }, 1000);
+      document.getElementById('balance').textContent = balance;
+    }
+
+    function showWinScreen(text, cssClass) {
+      const winDiv = document.createElement('div');
+      winDiv.className = cssClass;
+      winDiv.textContent = text;
+      document.body.appendChild(winDiv);
+      setTimeout(() => {
+        winDiv.remove();
+      }, 3000);
     }
 
     function playSound(id) {
@@ -126,13 +250,6 @@
       sound.pause();
       sound.currentTime = 0;
       sound.play();
-    }
-
-    function updateClownFace(balance) {
-      const clown = document.getElementById('clown-face');
-      clown.classList.remove('laugh', 'surprised');
-      if (balance < 30) clown.classList.add('laugh');
-      else if (balance > 150) clown.classList.add('surprised');
     }
 
     const canvas = document.getElementById('fireworks');
@@ -146,7 +263,7 @@
         y: canvas.height / 2,
         dx: Math.random() * 10 - 5,
         dy: Math.random() * 10 - 5,
-        life: 60
+        life: 50
       }));
 
       const interval = setInterval(() => {
@@ -154,7 +271,7 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         particles.forEach(p => {
-          ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 70%)`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
           ctx.fill();
@@ -164,7 +281,10 @@
         });
 
         particles = particles.filter(p => p.life > 0);
-        if (particles.length === 0) clearInterval(interval);
+        if (particles.length === 0) {
+          clearInterval(interval);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
       }, 30);
     }
 
