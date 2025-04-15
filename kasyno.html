@@ -2,6 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kansino Offline</title>
   <link rel="stylesheet" href="skrypt.css">
 </head>
@@ -33,11 +34,10 @@
   </div>
 
   <div class="result" id="result"></div>
-
   <div id="clown-face"></div>
-
   <canvas class="fireworks" id="fireworks"></canvas>
 
+  <!-- Dźwięki -->
   <audio id="win-sound" src="sounds/win.mp3"></audio>
   <audio id="mega-win-sound" src="sounds/mega-win.mp3"></audio>
   <audio id="lose-sound" src="sounds/lose.mp3"></audio>
@@ -50,14 +50,13 @@
     function updateCasinoTheme() {
       const casino = document.getElementById('casino').value;
       const clown = document.getElementById('clown-face');
-      let img = '';
-      switch (casino) {
-        case 'joker': img = 'joker.png'; break;
-        case 'lucky': img = 'lucky.png'; break;
-        case 'gold': img = 'gold.png'; break;
-        case 'retro': img = 'retro.png'; break;
-      }
-      clown.style.backgroundImage = `url('${img}')`;
+      const imgMap = {
+        joker: 'joker.png',
+        lucky: 'lucky.png',
+        gold: 'gold.png',
+        retro: 'retro.png'
+      };
+      clown.style.backgroundImage = `url('${imgMap[casino]}')`;
     }
 
     function playSlot() {
@@ -67,13 +66,17 @@
         return;
       }
 
-      document.getElementById("spin-sound").play();
+      if (balance <= 0) {
+        alert("Brak żetonów! Gra zakończona.");
+        return;
+      }
+
+      const spinSound = document.getElementById("spin-sound");
+      spinSound.pause(); spinSound.currentTime = 0; spinSound.play();
 
       const slotElements = document.querySelectorAll('#slots .slot');
       const result = [];
-      slotElements.forEach(el => {
-        el.classList.add('spinning');
-      });
+      slotElements.forEach(el => el.classList.add('spinning'));
 
       setTimeout(() => {
         slotElements.forEach(el => el.classList.remove('spinning'));
@@ -94,42 +97,42 @@
           if (counts[key] === 3) {
             reward = bet * 2;
             output = '<div class="big-win">🎉 BIG WIN! 🎉</div>';
-            document.getElementById("win-sound").play();
+            playSound("win-sound");
           } else if (counts[key] >= 4) {
             reward = bet * 5;
             output = '<div class="mega-win">💥💥 MEGA WIN!!! 💥💥</div>';
             fireworks = true;
-            document.getElementById("mega-win-sound").play();
+            playSound("mega-win-sound");
           }
         }
 
         if (reward === 0) {
           balance -= bet;
-          document.getElementById("lose-sound").play();
+          playSound("lose-sound");
         } else {
           balance += reward;
         }
 
         document.getElementById('balance').textContent = balance;
         document.getElementById('result').innerHTML = output;
-
         updateClownFace(balance);
-
         if (fireworks) startFireworks();
+
       }, 1000);
+    }
+
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      sound.pause();
+      sound.currentTime = 0;
+      sound.play();
     }
 
     function updateClownFace(balance) {
       const clown = document.getElementById('clown-face');
-      if (balance < 30) {
-        clown.classList.add('laugh');
-        clown.classList.remove('surprised');
-      } else if (balance > 150) {
-        clown.classList.add('surprised');
-        clown.classList.remove('laugh');
-      } else {
-        clown.classList.remove('laugh', 'surprised');
-      }
+      clown.classList.remove('laugh', 'surprised');
+      if (balance < 30) clown.classList.add('laugh');
+      else if (balance > 150) clown.classList.add('surprised');
     }
 
     const canvas = document.getElementById('fireworks');
@@ -138,19 +141,18 @@
     canvas.height = window.innerHeight;
 
     function startFireworks() {
-      let particles = [];
-      for (let i = 0; i < 100; i++) {
-        particles.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          dx: Math.random() * 10 - 5,
-          dy: Math.random() * 10 - 5,
-          life: 60
-        });
-      }
-      let interval = setInterval(() => {
+      let particles = Array.from({ length: 100 }, () => ({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        dx: Math.random() * 10 - 5,
+        dy: Math.random() * 10 - 5,
+        life: 60
+      }));
+
+      const interval = setInterval(() => {
         ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         particles.forEach(p => {
           ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
           ctx.beginPath();
@@ -160,6 +162,7 @@
           p.y += p.dy;
           p.life--;
         });
+
         particles = particles.filter(p => p.life > 0);
         if (particles.length === 0) clearInterval(interval);
       }, 30);
@@ -169,4 +172,5 @@
   </script>
 </body>
 </html>
+
 
