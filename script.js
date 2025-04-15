@@ -150,28 +150,6 @@ function startFireworks() {
 
 updateCasinoTheme(); // uruchom od razu, by załadować obrazek
 
-const bgMusic = document.getElementById('bg-music');
-const musicBtn = document.getElementById('music-btn');
-
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play();
-    musicBtn.textContent = '🔇 Wycisz muzykę';
-  } else {
-    bgMusic.pause();
-    musicBtn.textContent = '🎵 Włącz muzykę';
-  }
-}
-const bgMusic = document.getElementById('bg-music');
-const musicBtn = document.getElementById('music-btn');
-
-function toggleMusic() {
-  if (bgMusic.paused) {
-    bgMusic.play();
-    musicBtn.textContent = '🔇 Wycisz muzykę';
-  } else {
-    bgMusic.pause();
-    musicBtn.textContent = '🎵 Włącz muzykę';
   }
 }
 
