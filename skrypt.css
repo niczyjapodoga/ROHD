@@ -92,6 +92,7 @@ h1 {
   background-size: contain;
   background-repeat: no-repeat;
   animation: clownLaugh 5s infinite;
+  background-image: url('joker.png'); /* <-- TUTAJ */
 }
 
 @keyframes clownLaugh {
