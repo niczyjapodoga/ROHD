@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>Kansino Offline</title>
-  <link rel="stylesheet" href="skrypt.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Kansino Offline</h1>
 
   <div class="casino-select">
     <label for="casino">Wybierz kasyno:</label>
-    <select id="casino">
+    <select id="casino" onchange="updateCasinoTheme()">
       <option value="joker">Joker Casino</option>
       <option value="lucky">Lucky Kasino</option>
       <option value="gold">Golden Spin</option>
@@ -25,11 +25,11 @@
   <div class="balance-info">Stan konta: <span id="balance">100</span> żetonów</div>
 
   <div class="slot-machine" id="slots">
-    <div>?</div>
-    <div>?</div>
-    <div>?</div>
-    <div>?</div>
-    <div>?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
   </div>
 
   <div class="result" id="result"></div>
@@ -38,11 +38,135 @@
 
   <canvas class="fireworks" id="fireworks"></canvas>
 
-  <!-- Dźwięki -->
-  <audio id="win-sound" src="https://www.myinstants.com/media/sounds/slot-machine-big-win.mp3"></audio>
-  <audio id="lose-sound" src="https://www.myinstants.com/media/sounds/sad-trombone.mp3"></audio>
-  <audio id="spin-sound" src="https://www.myinstants.com/media/sounds/slot-machine.mp3"></audio>
+  <audio id="win-sound" src="sounds/win.mp3"></audio>
+  <audio id="mega-win-sound" src="sounds/mega-win.mp3"></audio>
+  <audio id="lose-sound" src="sounds/lose.mp3"></audio>
+  <audio id="spin-sound" src="sounds/spin.mp3"></audio>
 
-  <script src="script.js"></script>
+  <script>
+    const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
+    let balance = 100;
+
+    function updateCasinoTheme() {
+      const casino = document.getElementById('casino').value;
+      const clown = document.getElementById('clown-face');
+      let img = '';
+      switch (casino) {
+        case 'joker': img = 'joker.png'; break;
+        case 'lucky': img = 'lucky.png'; break;
+        case 'gold': img = 'gold.png'; break;
+        case 'retro': img = 'retro.png'; break;
+      }
+      clown.style.backgroundImage = `url('${img}')`;
+    }
+
+    function playSlot() {
+      const bet = parseInt(document.getElementById('bet').value);
+      if (bet > balance || bet <= 0) {
+        alert("Nie masz wystarczająco żetonów lub nieprawidłowa stawka.");
+        return;
+      }
+
+      document.getElementById("spin-sound").play();
+
+      const slotElements = document.querySelectorAll('#slots .slot');
+      const result = [];
+      slotElements.forEach(el => {
+        el.classList.add('spinning');
+      });
+
+      setTimeout(() => {
+        slotElements.forEach(el => el.classList.remove('spinning'));
+        for (let i = 0; i < 5; i++) {
+          const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+          slotElements[i].textContent = symbol;
+          result.push(symbol);
+        }
+
+        const counts = {};
+        result.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
+
+        let output = 'Spróbuj jeszcze raz...';
+        let reward = 0;
+        let fireworks = false;
+
+        for (let key in counts) {
+          if (counts[key] === 3) {
+            reward = bet * 2;
+            output = '<div class="big-win">🎉 BIG WIN! 🎉</div>';
+            document.getElementById("win-sound").play();
+          } else if (counts[key] >= 4) {
+            reward = bet * 5;
+            output = '<div class="mega-win">💥💥 MEGA WIN!!! 💥💥</div>';
+            fireworks = true;
+            document.getElementById("mega-win-sound").play();
+          }
+        }
+
+        if (reward === 0) {
+          balance -= bet;
+          document.getElementById("lose-sound").play();
+        } else {
+          balance += reward;
+        }
+
+        document.getElementById('balance').textContent = balance;
+        document.getElementById('result').innerHTML = output;
+
+        updateClownFace(balance);
+
+        if (fireworks) startFireworks();
+      }, 1000);
+    }
+
+    function updateClownFace(balance) {
+      const clown = document.getElementById('clown-face');
+      if (balance < 30) {
+        clown.classList.add('laugh');
+        clown.classList.remove('surprised');
+      } else if (balance > 150) {
+        clown.classList.add('surprised');
+        clown.classList.remove('laugh');
+      } else {
+        clown.classList.remove('laugh', 'surprised');
+      }
+    }
+
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function startFireworks() {
+      let particles = [];
+      for (let i = 0; i < 100; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          dx: Math.random() * 10 - 5,
+          dy: Math.random() * 10 - 5,
+          life: 60
+        });
+      }
+      let interval = setInterval(() => {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 50%)`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+          p.x += p.dx;
+          p.y += p.dy;
+          p.life--;
+        });
+        particles = particles.filter(p => p.life > 0);
+        if (particles.length === 0) clearInterval(interval);
+      }, 30);
+    }
+
+    updateCasinoTheme();
+  </script>
 </body>
 </html>
+
