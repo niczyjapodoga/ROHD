@@ -274,17 +274,18 @@
       sound.play();
     }
 
-    function showMegaWinVideo() {
-      const video = document.getElementById('megaWinVideo');
-      video.style.display = 'block';
-      video.currentTime = 0;
-      video.play();
+ function showMegaWinVideo() {
+  const video = document.getElementById('megaWinVideo');
+  video.style.display = 'block';
+  video.muted = false; // 🔈 dźwięk on!
+  video.currentTime = 0;
+  video.play();
 
-      setTimeout(() => {
-        video.pause();
-        video.style.display = 'none';
-      }, 4000); // 4 sekundy — możesz zmienić
-    }
+  setTimeout(() => {
+    video.pause();
+    video.style.display = 'none';
+  }, 4000);
+}
 
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
