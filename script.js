@@ -149,4 +149,6 @@ function startFireworks() {
 }
 
 updateCasinoTheme(); // uruchom od razu, by załadować obrazek
+
+function showWinVideo(type) { const videoMap = { 'big-win': 'dexteredit.mp4', 'mega-win': 'Download (5).mp4', 'ultra-win': 'ssstik.io_1744655771300.mp4' }; const video = document.createElement('video'); video.src = videoMap[type]; video.autoplay = true; video.muted = false; video.className = 'win-video'; video.style.position = 'fixed'; video.style.top = '50%'; video.style.left = '50%'; video.style.transform = 'translate(-50%, -50%)'; video.style.zIndex = '9999'; video.style.maxWidth = '80%'; video.style.border = '5px solid yellow'; video.style.borderRadius = '20px'; video.style.boxShadow = '0 0 20px white'; document.body.appendChild(video); video.onended = () => { video.remove(); }; }
 </script>
