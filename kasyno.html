@@ -112,10 +112,22 @@
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    #megaWinVideo {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 2000;
+    }
   </style>
 </head>
 <body>
   <h1>Kansino Offline</h1>
+
   <audio id="bg-music" autoplay loop>
     <source src="muzyka.mp3" type="audio/mpeg">
   </audio>
@@ -147,6 +159,11 @@
   <div class="result" id="result"></div>
   <div id="clown-face"></div>
   <canvas class="fireworks" id="fireworks"></canvas>
+
+  <!-- Mega Win Video -->
+  <video id="megaWinVideo" autoplay muted>
+    <source src="dexteredit.mp4" type="video/mp4">
+  </video>
 
   <!-- Dźwięki -->
   <audio id="win-sound" src="coin-recieved-230517.mp3"></audio>
@@ -217,15 +234,16 @@
           winClass = 'mega-win';
           fireworks = true;
           playSound('mega-win-sound');
+          showMegaWinVideo(); // ← dodano film
         } else if (counts[key] === 5) {
           reward = bet * 10;
           winText = '🔥🔥 ULTRA WIN!!!! 🔥🔥';
           winClass = 'ultra-win';
           fireworks = true;
           playSound('mega-win-sound');
+          showMegaWinVideo(); // ← dodano film
         }
       }
-
 
       if (reward > 0) {
         balance += reward;
@@ -254,6 +272,18 @@
       sound.pause();
       sound.currentTime = 0;
       sound.play();
+    }
+
+    function showMegaWinVideo() {
+      const video = document.getElementById('megaWinVideo');
+      video.style.display = 'block';
+      video.currentTime = 0;
+      video.play();
+
+      setTimeout(() => {
+        video.pause();
+        video.style.display = 'none';
+      }, 4000); // 4 sekundy — możesz zmienić
     }
 
     const canvas = document.getElementById('fireworks');
@@ -294,11 +324,5 @@
 
     updateCasinoTheme();
   </script>
-  <audio id="bg-music" autoplay loop>
-    <source src="muzyka.mp3" type="audio/mpeg">
-  </audio>
-
 </body>
 </html>
-
-
