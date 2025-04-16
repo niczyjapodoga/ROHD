@@ -152,6 +152,119 @@ updateCasinoTheme(); // uruchom od razu, by załadować obrazek
 
   }
 }
+const wheelCanvas = document.getElementById('wheelCanvas');
+const ctxWheel = wheelCanvas.getContext('2d');
+const segments = [
+  'Edycja Dexter Morgan',
+  'Nagroda Specjalna',
+  'Edycja Walter White',
+  'Jackpot!',
+  'Edycja Tony Montana',
+  'Gratisowy Spin',
+  'Nic nie wygrałeś',
+  'Edycja Joker'
+];
+const colors = ['#ff0000', '#ff9900', '#ffff00', '#00cc00', '#0099ff', '#6600cc', '#ff66cc', '#999999'];
+
+let angle = 0;
+let spinning = false;
+
+function drawWheel() {
+  const radius = 200;
+  const segmentAngle = (2 * Math.PI) / segments.length;
+
+  for (let i = 0; i < segments.length; i++) {
+    ctxWheel.beginPath();
+    ctxWheel.fillStyle = colors[i];
+    ctxWheel.moveTo(radius, radius);
+    ctxWheel.arc(radius, radius, radius, i * segmentAngle, (i + 1) * segmentAngle);
+    ctxWheel.fill();
+
+    ctxWheel.save();
+    ctxWheel.translate(radius, radius);
+    ctxWheel.rotate(i * segmentAngle + segmentAngle / 2);
+    ctxWheel.textAlign = "right";
+    ctxWheel.fillStyle = "#000";
+    ctxWheel.font = "16px Comic Sans MS";
+    ctxWheel.fillText(segments[i], radius - 10, 10);
+    ctxWheel.restore();
+  }
+}
+
+function spinWheel() {
+  if (spinning) return;
+  spinning = true;
+
+  const spinTime = 5000;
+  const targetAngle = Math.random() * 2 * Math.PI + 10 * 2 * Math.PI; // kilka obrotów
+  const start = performance.now();
+
+  function animate(time) {
+    const progress = (time - start) / spinTime;
+    if (progress < 1) {
+      angle = easeOut(progress) * targetAngle;
+      drawRotatedWheel(angle);
+      requestAnimationFrame(animate);
+    } else {
+      angle = targetAngle;
+      drawRotatedWheel(angle);
+      showWheelResult(angle);
+      spinning = false;
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+function drawRotatedWheel(currentAngle) {
+  ctxWheel.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+  ctxWheel.save();
+  ctxWheel.translate(200, 200);
+  ctxWheel.rotate(currentAngle);
+  ctxWheel.translate(-200, -200);
+  drawWheel();
+  ctxWheel.restore();
+}
+
+function easeOut(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function showWheelResult(finalAngle) {
+  const segmentAngle = (2 * Math.PI) / segments.length;
+  const index = Math.floor(((2 * Math.PI - (finalAngle % (2 * Math.PI))) % (2 * Math.PI)) / segmentAngle);
+  const resultText = segments[index];
+  document.getElementById('wheel-result').textContent = `🎯 Wylosowano: ${resultText}`;
+
+  if (resultText.includes('Edycja')) {
+    playWheelVideo(resultText);
+  }
+}
+
+function playWheelVideo(label) {
+  const video = document.getElementById('megaWinVideo');
+  let videoMap = {
+    'Edycja Dexter Morgan': 'dexteredit.mp4',
+    'Edycja Walter White': 'walter.mp4',
+    'Edycja Tony Montana': 'tony.mp4',
+    'Edycja Joker': 'jokeredit.mp4'
+  };
+  const src = videoMap[label];
+  if (src) {
+    video.querySelector('source').src = src;
+    video.load();
+    video.style.display = 'block';
+    video.muted = false;
+    video.currentTime = 0;
+    video.play();
+    video.onended = () => {
+      video.style.display = 'none';
+    };
+  }
+}
+
+drawWheel();
+
 
 function showWinVideo(type) { const videoMap = { 'big-win': 'dexteredit.mp4', 'mega-win': 'Download (5).mp4', 'ultra-win': 'ssstik.io_1744655771300.mp4' }; const video = document.createElement('video'); video.src = videoMap[type]; video.autoplay = true; video.muted = false; video.className = 'win-video'; video.style.position = 'fixed'; video.style.top = '50%'; video.style.left = '50%'; video.style.transform = 'translate(-50%, -50%)'; video.style.zIndex = '9999'; video.style.maxWidth = '80%'; video.style.border = '5px solid yellow'; video.style.borderRadius = '20px'; video.style.boxShadow = '0 0 20px white'; document.body.appendChild(video); video.onended = () => { video.remove(); }; }
 </script>
