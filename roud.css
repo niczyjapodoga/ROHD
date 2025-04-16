@@ -18,15 +18,16 @@ h1 {
 
 .arrow {
   position: absolute;
-  top: -20px;
-  left: 50%;
+  top: 50%;
+  right: -20px; /* Przesunięcie strzałki na prawą stronę */
+  transform: translateY(-50%); /* Wyrównanie do środka po osi Y */
   width: 0;
   height: 0;
-  transform: translateX(-50%);
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 40px solid red;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid white;
   z-index: 10;
+}
 }
 }
 
