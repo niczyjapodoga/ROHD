@@ -362,8 +362,44 @@
     }
 
     updateCasinoTheme();
-    
-  </script>
+    <canvas id="wheelCanvas" width="400" height="400" style="border:4px solid #fff; border-radius: 50%;"></canvas>
+<button onclick="spinWheel()">Zakręć Kołem!</button>
+<div id="wheel-result"></div>
+
+<script>
+const wheelCanvas = document.getElementById('wheelCanvas');
+const ctxWheel = wheelCanvas.getContext('2d');
+const segments = [
+  'Dexter', 'Nagroda', 'Walter', 'Jackpot',
+  'Tony', 'Spin+', 'Nic', 'Joker'
+];
+const colors = ['#ff0000', '#ff9900', '#ffff00', '#00cc00', '#0099ff', '#6600cc', '#ff66cc', '#999999'];
+
+function drawWheel() {
+  const radius = 200;
+  const anglePerSegment = (2 * Math.PI) / segments.length;
+  for (let i = 0; i < segments.length; i++) {
+    ctxWheel.beginPath();
+    ctxWheel.fillStyle = colors[i];
+    ctxWheel.moveTo(radius, radius);
+    ctxWheel.arc(radius, radius, radius, i * anglePerSegment, (i + 1) * anglePerSegment);
+    ctxWheel.fill();
+    ctxWheel.save();
+    ctxWheel.translate(radius, radius);
+    ctxWheel.rotate(i * anglePerSegment + anglePerSegment / 2);
+    ctxWheel.textAlign = "right";
+    ctxWheel.fillStyle = "#000";
+    ctxWheel.font = "14px sans-serif";
+    ctxWheel.fillText(segments[i], radius - 10, 5);
+    ctxWheel.restore();
+  }
+}
+
+window.onload = function () {
+  drawWheel();
+};
+</script>
+
 </body>
 </html>
 
