@@ -146,10 +146,23 @@
 
           document.getElementById('result').innerText = `Wylosowano: ${result}`;
           
-          // Wyświetl film
-          const videoSrc = videoFiles[result];
-          videoElement.src = videoSrc;
-          videoContainer.style.display = 'block';  // Pokaż kontener z filmem
+          // Wyświetl film z opóźnieniem 5 sekund
+          setTimeout(() => {
+            const videoSrc = videoFiles[result];
+            videoElement.src = videoSrc;
+            videoContainer.style.display = 'block';  // Pokaż kontener z filmem
+
+            // Uruchomienie dźwięku po 5 sekundach od rozpoczęcia filmu
+            setTimeout(() => {
+              videoElement.play();  // Rozpoczyna odtwarzanie filmu i włącza dźwięk
+            }, 5000);
+
+            // Zatrzymanie filmu po 7 sekundach
+            setTimeout(() => {
+              videoElement.pause();  // Zatrzymuje film po 7 sekundach
+              videoContainer.style.display = 'none';  // Ukrywa kontener z filmem
+            }, 7000);
+          }, 5000);  // 5-sekundowe opóźnienie przed rozpoczęciem filmu
         }
       }, 10);
     }
@@ -159,4 +172,5 @@
 
 </body>
 </html>
+
 
