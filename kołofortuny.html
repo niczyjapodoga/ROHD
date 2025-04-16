@@ -19,7 +19,7 @@
     .arrow {
       position: absolute;
       top: 50%;
-      right: -20px; /* Przesunięcie strzałki na prawą stronę */
+      right: -15px; /* Przesunięcie strzałki na prawą stronę */
       transform: translateY(-50%); /* Wyrównanie do środka po osi Y */
       width: 0;
       height: 0;
@@ -40,6 +40,11 @@
       border: none;
       background: white;
       box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background-color: gray; /* Kolor przycisku, gdy jest zablokowany */
+      cursor: not-allowed; /* Kursor wskazujący, że przycisk jest zablokowany */
     }
     #video-container {
       display: none; /* Ukrywa kontener z filmem na początku */
@@ -70,7 +75,7 @@
     <canvas id="wheel" width="500" height="500"></canvas>
   </div>
 
-  <button onclick="spin()">Zakręć Kołem!</button>
+  <button id="spinButton" onclick="spin()">Zakręć Kołem!</button>
   <h2 id="result"></h2>
 
   <!-- Kontener na film -->
@@ -88,17 +93,18 @@
 
     const videoContainer = document.getElementById('video-container');
     const videoElement = document.getElementById('video');
+    const spinButton = document.getElementById('spinButton');
 
     // Filmy przypisane do segmentów
     const videoFiles = {
-      "Walter": "ssstik.io_1744655771300.mp4",
-      "Jackpot": "ssstik.io_1744655771300.mp4",
-      "Tony": "ssstik.io_1744655771300.mp4",
-      "Spina": "ssstik.io_1744655771300.mp4",
-      "Nic": "muzyka.mp4",
-      "Joker": "ssstik.io_1744655875313.mp4",
-      "Dexter": "dexteredit.mp4",
-      "Nagroda": "ssstik.io_1744656044052.mp4"
+      "Walter": "video1.mp4",
+      "Jackpot": "video2.mp4",
+      "Tony": "video3.mp4",
+      "Spina": "video4.mp4",
+      "Nic": "video5.mp4",
+      "Joker": "video6.mp4",
+      "Dexter": "video7.mp4",
+      "Nagroda": "video8.mp4"
     };
 
     function drawWheel() {
@@ -126,6 +132,12 @@
     }
 
     function spin() {
+      // Blokowanie przycisku na 6 sekund (cooldown)
+      spinButton.disabled = true;
+      setTimeout(() => {
+        spinButton.disabled = false;  // Ponowne włączenie przycisku po 6 sekundach
+      }, 6000);
+
       const extraRotations = 360 * 5;
       const randomAngle = Math.floor(Math.random() * 360);
       const totalRotation = extraRotations + randomAngle;
@@ -172,5 +184,3 @@
 
 </body>
 </html>
-
-
