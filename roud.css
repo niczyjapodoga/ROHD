@@ -11,8 +11,23 @@ h1 {
 
 .wheel-container {
   position: relative;
-  display: inline-block;
-  margin-top: 30px;
+  width: 500px;
+  height: 500px;
+  margin: 0 auto;
+}
+
+.arrow {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 40px solid red;
+  z-index: 10;
+}
 }
 
 .pointer {
