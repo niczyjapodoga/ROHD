@@ -177,6 +177,13 @@
   <audio id="lose-sound" src="sounds/lose.mp3"></audio>
   <audio id="spin-sound" src="dice-sound-288763.mp3"></audio>
 
+  <h2>Koło Fortuny</h2>
+<canvas id="wheelCanvas" width="400" height="400" style="border:4px solid #fff; border-radius: 50%;"></canvas>
+<br>
+<button onclick="spinWheel()">🎡 Zakręć Kołem!</button>
+<div id="wheel-result" style="font-size: 2em; margin-top: 10px;"></div>
+
+
   <!-- Skrypt -->
   <script>
     window.addEventListener('load', () => {
@@ -355,6 +362,7 @@
     }
 
     updateCasinoTheme();
+    
   </script>
 </body>
 </html>
