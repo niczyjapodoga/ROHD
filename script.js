@@ -9,7 +9,7 @@ function updateCasinoTheme() {
   let img = '';
   switch (casino) {
     case 'joker': img = 'joker.png'; break;
-    case 'lucky': img = 'lucky.png'; break;
+    case 'Bajojajo': img = 'chomiczek.png'; break;
     case 'gold': img = 'gold.png'; break;
     case 'Rodek': img = 'RODus.png'; break;
   }
