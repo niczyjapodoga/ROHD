@@ -11,7 +11,7 @@ function updateCasinoTheme() {
     case 'joker': img = 'joker.png'; break;
     case 'lucky': img = 'lucky.png'; break;
     case 'gold': img = 'gold.png'; break;
-    case 'retro': img = 'retro.png'; break;
+    case 'Rodek': img = 'RODus.png'; break;
   }
   clown.style.backgroundImage = `url('${img}')`;
 }
