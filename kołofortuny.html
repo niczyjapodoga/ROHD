@@ -149,53 +149,48 @@
       }
     }
 
-    function spin() {
-      spinButton.disabled = true;
+   function spin() {
+  spinButton.disabled = true;
+  setTimeout(() => {
+    spinButton.disabled = false;
+  }, 9000);
+
+  const extraRotations = 360 * 5;
+  const randomAngle = Math.floor(Math.random() * 360);
+  const totalRotation = extraRotations + randomAngle;
+
+  let current = 0;
+  const spinSpeed = 10;
+  const interval = setInterval(() => {
+    current += spinSpeed;
+    rotation = (rotation + spinSpeed) % 360;
+    ctx.clearRect(0, 0, 500, 500);
+    drawWheel();
+
+    if (current >= totalRotation) {
+      clearInterval(interval);
+      const normalized = (360 - (rotation % 360)) % 360;
+      const index = Math.floor(normalized / segmentAngle) % segments.length;
+      const result = segments[index];
+
+      // ✅ Poprawne wyświetlenie wyniku z szablonem
+      document.getElementById('result').innerText = `Wylosowano: ${result}`;
+
+      // ⏳ Po 3 sekundach dopiero pojawia się film
       setTimeout(() => {
-        spinButton.disabled = false;
-      }, 9000);
+        const videoSrc = videoFiles[result];
+        videoElement.src = videoSrc;
+        videoContainer.style.display = 'flex';
 
-      const extraRotations = 360 * 5;
-      const randomAngle = Math.floor(Math.random() * 360);
-      const totalRotation = extraRotations + randomAngle;
-
-      let current = 0;
-      const spinSpeed = 10;
-      const interval = setInterval(() => {
-        current += spinSpeed;
-        rotation = (rotation + spinSpeed) % 360;
-        ctx.clearRect(0, 0, 500, 500);
-        drawWheel();
-
-        if (current >= totalRotation) {
-          clearInterval(interval);
-          const normalized = (360 - (rotation % 360)) % 360;
-          const index = Math.floor(normalized / segmentAngle) % segments.length;
-          const result = segments[index];
-
-          document.getElementById('result').innerText = Wylosowano: ${result};
+        videoElement.onloadedmetadata = function () {
+          videoElement.play();
 
           setTimeout(() => {
-            const videoSrc = videoFiles[result];
-            videoElement.src = videoSrc;
-            videoContainer.style.display = 'flex';  // Zmienione na 'flex' dla lepszego wycentrowania wideo
-
-            videoElement.onloadedmetadata = function() {
-              const videoDuration = videoElement.duration;
-              videoElement.play();
-
-              setTimeout(() => {
-                videoElement.pause();
-                videoContainer.style.display = 'none';
-              }, videoDuration * 1000);
-            };
-          }, 1000);
-        }
-      }, 10);
+            videoElement.pause();
+            videoContainer.style.display = 'none';
+          }, videoElement.duration * 1000);
+        };
+      }, 3000); // 3 sekundy opóźnienia na pokazanie tekstu
     }
-
-    drawWheel();
-  </script>
-
-</body>
-</html>
+  }, 10);
+}
