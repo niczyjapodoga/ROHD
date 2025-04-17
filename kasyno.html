@@ -1,400 +1,51 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kansino Offline</title>
-  <style>
-    body {
-      background: linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #0000ff);
-      background-size: 400% 400%;
-      animation: bgShift 10s infinite;
-      color: #fff;
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-    }
-
-    @keyframes bgShift {
-      0% { background-position: 0 0; }
-      50% { background-position: 100% 100%; }
-      100% { background-position: 0 0; }
-    }
-
-    h1 {
-      font-size: 4em;
-      color: #00ffff;
-      text-shadow: 0 0 10px #ff0, 0 0 20px #f0f;
-    }
-
-    .casino-select {
-      margin: 20px;
-    }
-
-    .slot-machine {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 30px 0;
-      font-size: 3em;
-    }
-
-    .slot-machine div {
-      background: #000;
-      padding: 20px;
-      border: 5px solid #fff;
-      border-radius: 10px;
-      animation: spinSym 0.3s ease-in-out;
-      box-shadow: 0 0 10px #fff;
-    }
-
-    @keyframes spinSym {
-      0% { transform: scale(0.5) rotateX(360deg); }
-      100% { transform: scale(1); }
-    }
-
-    .big-win, .mega-win, .ultra-win {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 0, 255, 0.8);
-      color: yellow;
-      font-size: 5em;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: winFlash 1s infinite;
-      text-shadow: 2px 2px 10px #000, 0 0 20px #fff;
-    }
-
-    @keyframes winFlash {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
-    }
-
-    .balance-info {
-      margin: 20px;
-      font-size: 1.5em;
-    }
-
-    #clown-face {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
-      background-size: contain;
-      background-repeat: no-repeat;
-      animation: clownLaugh 5s infinite;
-    }
-
-    @keyframes clownLaugh {
-      0%, 80% { transform: rotate(0); }
-      85% { transform: rotate(10deg); }
-      90% { transform: rotate(-10deg); }
-      95% { transform: rotate(10deg); }
-      100% { transform: rotate(0); }
-    }
-
-    .fireworks {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    #megaWinVideo {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      object-fit: cover;
-      z-index: 2000;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Kasyno</title>
+  <link rel="stylesheet" href="skrypt.css">
 </head>
 <body>
-  <h1>Kansino Offline</h1>
-
-  <!-- Muzyka w tle -->
-  <audio id="bg-music" autoplay loop>
-    <source src="muzyka.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Przycisk pauzy/wznowienia -->
-  <div class="audio-controls">
-    <button onclick="toggleAudio()" id="audio-toggle-btn">⏸️ Pauza Dźwięku</button>
-  </div>
+  <h1>Witaj w Kasynie!</h1>
 
   <div class="casino-select">
-    <label for="casino">Wybierz kasyno:</label>
     <select id="casino" onchange="updateCasinoTheme()">
-      <option value="joker">Joker Casino</option>
-      <option value="lucky">Lucky Kasino</option>
-      <option value="gold">Golden Spin</option>
-      <option value="retro">Rodek Kansino</option>
+      <option value="joker">Joker</option>
+      <option value="lucky">Lucky</option>
+      <option value="gold">Gold</option>
+      <option value="retro">Retro</option>
     </select>
-    <br><br>
-    <label for="bet">Postaw (żetony):</label>
-    <input type="number" id="bet" min="1" value="10">
-    <button id="spin-btn" onclick="playSlot()">Zakręć!</button>
   </div>
-
-  <div class="balance-info">Stan konta: <span id="balance">100</span> żetonów</div>
 
   <div class="slot-machine" id="slots">
-    <div class="slot">?</div>
-    <div class="slot">?</div>
-    <div class="slot">?</div>
-    <div class="slot">?</div>
-    <div class="slot">?</div>
+    <div class="slot">🍒</div>
+    <div class="slot">🔔</div>
+    <div class="slot">🍋</div>
+    <div class="slot">⭐</div>
+    <div class="slot">💎</div>
   </div>
 
-  <div class="result" id="result"></div>
+  <div class="balance-info">
+    <p>Twój balans: <span id="balance">100</span></p>
+    <input type="number" id="bet" min="1" max="100" value="10">
+    <button onclick="playSlot()">Zagraj!</button>
+  </div>
+
   <div id="clown-face"></div>
-  <canvas class="fireworks" id="fireworks"></canvas>
+  <p id="result"></p>
 
-  <!-- Mega Win Video -->
-  <video id="megaWinVideo" autoplay>
-    <source src="dexteredit.mp4" type="video/mp4">
-  </video>
+  <div id="wheel-container">
+    <canvas id="wheelCanvas" width="400" height="400"></canvas>
+    <button onclick="spinWheel()">Zakręć Kołem!</button>
+    <h2 id="wheel-result"></h2>
+  </div>
 
-  <!-- Dźwięki -->
-  <audio id="win-sound" src="coin-recieved-230517.mp3"></audio>
-  <audio id="mega-win-sound" src="slot-machine-coin-payout-1-188227.mp3"></audio>
-  <audio id="lose-sound" src="sounds/lose.mp3"></audio>
-  <audio id="spin-sound" src="dice-sound-288763.mp3"></audio>
-<button onclick="window.location.href='kołofortuny.html'">🎰 Ruletka</button>
+  <div id="fireworks" class="fireworks"></div>
 
+  <video id="megaWinVideo" style="display: none" controls></video>
 
-  <!-- Skrypt -->
-  <script>
-    window.addEventListener('load', () => {
-      const audio = document.getElementById("bg-music");
-      audio.muted = false;
-      audio.volume = 0.5;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => console.log("Dźwięk gra 🚀"))
-                   .catch(error => console.warn("Autoplay zablokowany:", error));
-      }
-    });
-
-    let isPlaying = true;
-    function toggleAudio() {
-      const audio = document.getElementById("bg-music");
-      const button = document.getElementById("audio-toggle-btn");
-      if (isPlaying) {
-        audio.pause();
-        button.innerText = "▶️ Wznów Dźwięk";
-      } else {
-        audio.play();
-        button.innerText = "⏸️ Pauza Dźwięku";
-      }
-      isPlaying = !isPlaying;
-    }
-
-    const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
-    let balance = 100;
-    let cooldown = false;
-
-    function updateCasinoTheme() {
-      const casino = document.getElementById('casino').value;
-      const clown = document.getElementById('clown-face');
-      const imgMap = {
-        joker: 'joker.png',
-        lucky: 'lucky.png',
-        gold: 'gold.png',
-        retro: 'RODus.png'
-      };
-      clown.style.backgroundImage = `url('${imgMap[casino]}')`;
-    }
-
-    function playSlot() {
-      if (cooldown) return;
-      cooldown = true;
-      document.getElementById('spin-btn').disabled = true;
-      setTimeout(() => {
-        cooldown = false;
-        document.getElementById('spin-btn').disabled = false;
-      }, 3000);
-
-      const bet = parseInt(document.getElementById('bet').value);
-      if (bet > balance || bet <= 0) {
-        alert("Nie masz wystarczająco żetonów lub nieprawidłowa stawka.");
-        return;
-      }
-
-      document.getElementById("spin-sound").play();
-
-      const slotElements = document.querySelectorAll('#slots .slot');
-      const result = [];
-
-      for (let i = 0; i < 5; i++) {
-        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-        slotElements[i].textContent = symbol;
-        result.push(symbol);
-      }
-
-      const counts = {};
-      result.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
-
-      let reward = 0;
-      let fireworks = false;
-      let winText = '';
-      let winClass = '';
-
-      for (let key in counts) {
-        if (counts[key] === 3) {
-          reward = bet * 2;
-          winText = '🎉 BIG WIN! 🎉';
-          winClass = 'big-win';
-          playSound('win-sound');
-        } else if (counts[key] === 4) {
-          reward = bet * 5;
-          winText = '💥 MEGA WIN!!! 💥';
-          winClass = 'mega-win';
-          fireworks = true;
-          playSound('mega-win-sound');
-          showMegaWinVideo();
-        } else if (counts[key] === 5) {
-          reward = bet * 10;
-          winText = '🔥🔥 ULTRA WIN!!!! 🔥🔥';
-          winClass = 'ultra-win';
-          fireworks = true;
-          playSound('mega-win-sound');
-          showMegaWinVideo();
-        }
-      }
-
-      if (reward > 0) {
-        balance += reward;
-        showWinScreen(winText, winClass);
-        if (fireworks) startFireworks();
-      } else {
-        balance -= bet;
-        playSound('lose-sound');
-      }
-
-      document.getElementById('balance').textContent = balance;
-    }
-
-    function showWinScreen(text, cssClass) {
-      const winDiv = document.createElement('div');
-      winDiv.className = cssClass;
-      winDiv.textContent = text;
-      document.body.appendChild(winDiv);
-      setTimeout(() => {
-        winDiv.remove();
-      }, 3000);
-    }
-
-    function playSound(id) {
-      const sound = document.getElementById(id);
-      sound.pause();
-      sound.currentTime = 0;
-      sound.play();
-    }
-
-    function showMegaWinVideo() {
-      const video = document.getElementById('megaWinVideo');
-      video.style.display = 'block';
-      video.muted = false;
-      video.currentTime = 0;
-      video.play();
-      setTimeout(() => {
-        video.pause();
-        video.style.display = 'none';
-      }, 4000);
-    }
-
-    const canvas = document.getElementById('fireworks');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    function startFireworks() {
-      let particles = Array.from({ length: 100 }, () => ({
-        x: canvas.width / 2,
-        y: canvas.height / 2,
-        dx: Math.random() * 10 - 5,
-        dy: Math.random() * 10 - 5,
-        life: 50
-      }));
-
-      const interval = setInterval(() => {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        particles.forEach(p => {
-          ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 70%)`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-          ctx.fill();
-          p.x += p.dx;
-          p.y += p.dy;
-          p.life--;
-        });
-
-        particles = particles.filter(p => p.life > 0);
-        if (particles.length === 0) {
-          clearInterval(interval);
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }, 30);
-    }
-
-    updateCasinoTheme();
-    <canvas id="wheelCanvas" width="400" height="400" style="border:4px solid #fff; border-radius: 50%;"></canvas>
-<button onclick="spinWheel()">Zakręć Kołem!</button>
-<div id="wheel-result"></div>
-
-<script>
-const wheelCanvas = document.getElementById('wheelCanvas');
-const ctxWheel = wheelCanvas.getContext('2d');
-const segments = [
-  'Dexter', 'Nagroda', 'Walter', 'Jackpot',
-  'Tony', 'Spin+', 'Nic', 'Joker'
-];
-const colors = ['#ff0000', '#ff9900', '#ffff00', '#00cc00', '#0099ff', '#6600cc', '#ff66cc', '#999999'];
-
-function drawWheel() {
-  const radius = 200;
-  const anglePerSegment = (2 * Math.PI) / segments.length;
-  for (let i = 0; i < segments.length; i++) {
-    ctxWheel.beginPath();
-    ctxWheel.fillStyle = colors[i];
-    ctxWheel.moveTo(radius, radius);
-    ctxWheel.arc(radius, radius, radius, i * anglePerSegment, (i + 1) * anglePerSegment);
-    ctxWheel.fill();
-    ctxWheel.save();
-    ctxWheel.translate(radius, radius);
-    ctxWheel.rotate(i * anglePerSegment + anglePerSegment / 2);
-    ctxWheel.textAlign = "right";
-    ctxWheel.fillStyle = "#000";
-    ctxWheel.font = "14px sans-serif";
-    ctxWheel.fillText(segments[i], radius - 10, 5);
-    ctxWheel.restore();
-  }
-}
-
-window.onload = function () {
-  drawWheel();
-};
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
+
 
