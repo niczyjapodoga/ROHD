@@ -18,6 +18,9 @@ body {
   height: 50px;
   background-color: #333;
   margin: 5px;
+  color: white;
+  text-align: center;
+  line-height: 50px;
 }
 
 .spinning {
@@ -37,6 +40,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: -1;  /* Zapewnienie, że canvas nie zasłoni innych elementów */
 }
 
 #clown-face {
@@ -46,6 +50,7 @@ body {
   background-color: #f00;
   margin-top: 20px;
   background-size: cover;
+  z-index: 1;  /* Zawsze na wierzchu */
 }
 
 .laugh {
@@ -54,4 +59,25 @@ body {
 
 .surprised {
   background-image: url('surprised.png');
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+button:hover {
+  background-color: #444;
+}
+
+input {
+  font-size: 18px;
+  padding: 10px;
+  margin-top: 20px;
 }
