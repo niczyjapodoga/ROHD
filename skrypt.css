@@ -54,11 +54,11 @@ body {
 }
 
 .laugh {
-  background-image: url('laugh.png');
+  background-image: url('joker.png');
 }
 
 .surprised {
-  background-image: url('surprised.png');
+  background-image: url('joker.png');
 }
 
 button {
