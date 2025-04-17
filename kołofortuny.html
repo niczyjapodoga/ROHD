@@ -86,7 +86,7 @@
   <script>
     const canvas = document.getElementById('wheel');
     const ctx = canvas.getContext('2d');
-    const segments = ["Walter", "Jackpot", "Tony", "Spina", "Nic", "Joker", "Dexter", "Nagroda"];
+    const segments = ["Walter", "Jackpot", "Tony", "Spina", "Kurzy Rodek", "Sheldon", "Dexter", "Nagroda"];
     const colors = ["yellow", "green", "deepskyblue", "blueviolet", "hotpink", "gray", "red", "orange"];
     const segmentAngle = 360 / segments.length;
     let rotation = 0;
@@ -101,8 +101,8 @@
       "Jackpot": "ssstik.io_1744655875313.mp4",
       "Tony": "ssstik.io_1744656044052.mp4",
       "Spina": "dexteredit.mp4",
-      "Nic": "dexteredit.mp4",
-      "Joker": "dexteredit.mp4",
+      "Kurzy Rodek": "ssstik.io_@notdurgz_1744911206501.mp4",
+      "Sheldon": "ssstik.io_1744911086229.mp4",
       "Dexter": "dexteredit.mp4",
       "Nagroda": "muzyka.mp4"
     };
@@ -164,16 +164,17 @@
             videoElement.src = videoSrc;
             videoContainer.style.display = 'block';  // Pokaż kontener z filmem
 
-            // Uruchomienie dźwięku po 5 sekundach od rozpoczęcia filmu
-            setTimeout(() => {
+            // Poczekaj na załadowanie metadanych, aby uzyskać czas trwania wideo
+            videoElement.onloadedmetadata = function() {
+              const videoDuration = videoElement.duration;  // Czas trwania filmu
               videoElement.play();  // Rozpoczyna odtwarzanie filmu i włącza dźwięk
-            }, 1000);
 
-            // Zatrzymanie filmu po 7 sekundach
-            setTimeout(() => {
-              videoElement.pause();  // Zatrzymuje film po 7 sekundach
-              videoContainer.style.display = 'none';  // Ukrywa kontener z filmem
-            }, 7000);
+              // Zatrzymaj film po czasie trwania
+              setTimeout(() => {
+                videoElement.pause();  // Zatrzymuje film po jego zakończeniu
+                videoContainer.style.display = 'none';  // Ukrywa kontener z filmem
+              }, videoDuration * 1000);  // Przekształć czas trwania w sekundach
+            };
           }, 1000);  // 5-sekundowe opóźnienie przed rozpoczęciem filmu
         }
       }, 10);
