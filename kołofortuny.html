@@ -8,7 +8,7 @@
       background-color: black;
       text-align: center;
       font-family: 'Comic Sans MS', cursive;
-      overflow: hidden; /* Ukrywa przewijanie strony */
+      overflow: hidden;
       color: white;
     }
     h1 {
@@ -44,6 +44,7 @@
     }
     canvas {
       border-radius: 50%;
+      background-color: white;
     }
     button {
       margin-top: 20px;
@@ -73,11 +74,13 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
       z-index: 20;
+      align-items: center;
+      justify-content: center;
     }
     video {
       width: 50%;
       height: 80%;
-      object-fit: cover;
+      object-fit: contain;
     }
     #result {
       margin-top: 20px;
@@ -127,6 +130,7 @@
     };
 
     function drawWheel() {
+      ctx.clearRect(0, 0, 500, 500);
       for (let i = 0; i < segments.length; i++) {
         const startAngle = (i * segmentAngle + rotation) * Math.PI / 180;
         const endAngle = ((i + 1) * segmentAngle + rotation) * Math.PI / 180;
@@ -149,48 +153,54 @@
       }
     }
 
-   function spin() {
-  spinButton.disabled = true;
-  setTimeout(() => {
-    spinButton.disabled = false;
-  }, 9000);
-
-  const extraRotations = 360 * 5;
-  const randomAngle = Math.floor(Math.random() * 360);
-  const totalRotation = extraRotations + randomAngle;
-
-  let current = 0;
-  const spinSpeed = 10;
-  const interval = setInterval(() => {
-    current += spinSpeed;
-    rotation = (rotation + spinSpeed) % 360;
-    ctx.clearRect(0, 0, 500, 500);
-    drawWheel();
-
-    if (current >= totalRotation) {
-      clearInterval(interval);
-      const normalized = (360 - (rotation % 360)) % 360;
-      const index = Math.floor(normalized / segmentAngle) % segments.length;
-      const result = segments[index];
-
-      // ✅ Poprawne wyświetlenie wyniku z szablonem
-      document.getElementById('result').innerText = `Wylosowano: ${result}`;
-
-      // ⏳ Po 3 sekundach dopiero pojawia się film
+    function spin() {
+      spinButton.disabled = true;
       setTimeout(() => {
-        const videoSrc = videoFiles[result];
-        videoElement.src = videoSrc;
-        videoContainer.style.display = 'flex';
+        spinButton.disabled = false;
+      }, 9000);
 
-        videoElement.onloadedmetadata = function () {
-          videoElement.play();
+      const extraRotations = 360 * 5;
+      const randomAngle = Math.floor(Math.random() * 360);
+      const totalRotation = extraRotations + randomAngle;
+
+      let current = 0;
+      const spinSpeed = 10;
+      const interval = setInterval(() => {
+        current += spinSpeed;
+        rotation = (rotation + spinSpeed) % 360;
+        drawWheel();
+
+        if (current >= totalRotation) {
+          clearInterval(interval);
+          const normalized = (360 - (rotation % 360)) % 360;
+          const index = Math.floor(normalized / segmentAngle) % segments.length;
+          const result = segments[index];
+
+          document.getElementById('result').innerText = `Wylosowano: ${result}`;
 
           setTimeout(() => {
-            videoElement.pause();
-            videoContainer.style.display = 'none';
-          }, videoElement.duration * 1000);
-        };
-      }, 3000); // 3 sekundy opóźnienia na pokazanie tekstu
+            const videoSrc = videoFiles[result];
+            if (videoSrc) {
+              videoElement.src = videoSrc;
+              videoContainer.style.display = 'flex';
+
+              videoElement.onloadedmetadata = function() {
+                videoElement.play();
+
+                setTimeout(() => {
+                  videoElement.pause();
+                  videoElement.currentTime = 0;
+                  videoContainer.style.display = 'none';
+                }, videoElement.duration * 1000);
+              };
+            }
+          }, 1000);
+        }
+      }, 10);
     }
-  }, 10);
-}
+
+    drawWheel();
+  </script>
+
+</body>
+</html>
