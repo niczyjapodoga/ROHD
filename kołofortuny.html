@@ -64,26 +64,21 @@
       background-color: gray;
       cursor: not-allowed;
     }
-  #video-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  z-index: 20;
-}
-
-video {
-  width: 60%;
-  height: auto; /* Dostosuj wysokość, aby zachować proporcje */
-  max-height: 90%;
-  object-fit: contain;
-}
-    
+    #video-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 90%;
+      height: 90%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 20;
+    }
+    video {
+      width: 50%;
+      height: 80%;
+      object-fit: cover;
+    }
     #result {
       margin-top: 20px;
       font-size: 24px;
@@ -178,7 +173,7 @@ video {
           const index = Math.floor(normalized / segmentAngle) % segments.length;
           const result = segments[index];
 
-          document.getElementById('result').innerText = `Wylosowano: ${result}`;
+          document.getElementById('result').innerText = Wylosowano: ${result};
 
           setTimeout(() => {
             const videoSrc = videoFiles[result];
