@@ -69,15 +69,18 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 80%;
-      height: 80%;
+      width: 100%;
+      height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
       z-index: 20;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     video {
-      width: 80%;
-      height: 80%;
-      object-fit: cover;
+      max-width: 90%; /* Maksymalna szerokość wideo */
+      max-height: 90%; /* Maksymalna wysokość wideo */
+      object-fit: contain; /* Utrzymanie proporcji wideo bez przycinania */
     }
     #result {
       margin-top: 20px;
@@ -178,7 +181,7 @@
           setTimeout(() => {
             const videoSrc = videoFiles[result];
             videoElement.src = videoSrc;
-            videoContainer.style.display = 'block';
+            videoContainer.style.display = 'flex';  // Zmienione na 'flex' dla lepszego wycentrowania wideo
 
             videoElement.onloadedmetadata = function() {
               const videoDuration = videoElement.duration;
