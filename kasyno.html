@@ -2,185 +2,359 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>Koło Fortuny</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kansino Offline</title>
   <style>
     body {
-      background: linear-gradient(to bottom right, #a8ff78, #78ffd6);
+      background: linear-gradient(45deg, #ff0000, #ffff00, #00ff00, #0000ff);
+      background-size: 400% 400%;
+      animation: bgShift 10s infinite;
+      color: #fff;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
       text-align: center;
-      font-family: 'Comic Sans MS', cursive;
-      overflow: hidden; /* Ukrywa przewijanie strony podczas wyświetlania filmu */
+      margin: 0;
+      padding: 0;
     }
-    .wheel-container {
-      position: relative;
-      width: 500px;
-      height: 500px;
-      margin: 40px auto;
+
+    @keyframes bgShift {
+      0% { background-position: 0 0; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0 0; }
     }
-    .arrow {
-      position: absolute;
-      top: 50%;
-      right: -15px; /* Przesunięcie strzałki na prawą stronę */
-      transform: translateY(-50%); /* Wyrównanie do środka po osi Y */
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 25px solid white;
-      z-index: 10;
+
+    h1 {
+      font-size: 4em;
+      color: #00ffff;
+      text-shadow: 0 0 10px #ff0, 0 0 20px #f0f;
     }
-    canvas {
-      border-radius: 50%;
+
+    .casino-select {
+      margin: 20px;
     }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      cursor: pointer;
+
+    .slot-machine {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 30px 0;
+      font-size: 3em;
+    }
+
+    .slot-machine div {
+      background: #000;
+      padding: 20px;
+      border: 5px solid #fff;
       border-radius: 10px;
-      border: none;
-      background: white;
-      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-      transition: background 0.3s ease;
+      animation: spinSym 0.3s ease-in-out;
+      box-shadow: 0 0 10px #fff;
     }
-    button:disabled {
-      background-color: gray; /* Kolor przycisku, gdy jest zablokowany */
-      cursor: not-allowed; /* Kursor wskazujący, że przycisk jest zablokowany */
+
+    @keyframes spinSym {
+      0% { transform: scale(0.5) rotateX(360deg); }
+      100% { transform: scale(1); }
     }
-    #video-container {
-      display: none; /* Ukrywa kontener z filmem na początku */
+
+    .big-win, .mega-win, .ultra-win {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      z-index: 20;
+      background: rgba(255, 0, 255, 0.8);
+      color: yellow;
+      font-size: 5em;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: winFlash 1s infinite;
+      text-shadow: 2px 2px 10px #000, 0 0 20px #fff;
     }
-    video {
+
+    @keyframes winFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .balance-info {
+      margin: 20px;
+      font-size: 1.5em;
+    }
+
+    #clown-face {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: clownLaugh 5s infinite;
+    }
+
+    @keyframes clownLaugh {
+      0%, 80% { transform: rotate(0); }
+      85% { transform: rotate(10deg); }
+      90% { transform: rotate(-10deg); }
+      95% { transform: rotate(10deg); }
+      100% { transform: rotate(0); }
+    }
+
+    .fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      pointer-events: none;
+      z-index: 999;
     }
-    #result {
-      margin-top: 20px;
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #megaWinVideo {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 2000;
     }
   </style>
 </head>
 <body>
+  <h1>Kansino Offline</h1>
 
-  <h1>Koło Fortuny</h1>
+  <!-- Muzyka w tle -->
+  <audio id="bg-music" autoplay loop>
+    <source src="muzyka.mp3" type="audio/mpeg">
+  </audio>
 
-  <div class="wheel-container">
-    <div class="arrow"></div>
-    <canvas id="wheel" width="500" height="500"></canvas>
+  <!-- Przycisk pauzy/wznowienia -->
+  <div class="audio-controls">
+    <button onclick="toggleAudio()" id="audio-toggle-btn">⏸️ Pauza Dźwięku</button>
   </div>
 
-  <button id="spinButton" onclick="spin()">Zakręć Kołem!</button>
-  <h2 id="result"></h2>
-
-  <!-- Kontener na film -->
-  <div id="video-container">
-    <video id="video" controls autoplay></video>
+  <div class="casino-select">
+    <label for="casino">Wybierz kasyno:</label>
+    <select id="casino" onchange="updateCasinoTheme()">
+      <option value="joker">Joker Casino</option>
+      <option value="lucky">Lucky Kasino</option>
+      <option value="gold">Golden Spin</option>
+      <option value="retro">Rodek Kansino</option>
+    </select>
+    <br><br>
+    <label for="bet">Postaw (żetony):</label>
+    <input type="number" id="bet" min="1" value="10">
+    <button id="spin-btn" onclick="playSlot()">Zakręć!</button>
   </div>
 
+  <div class="balance-info">Stan konta: <span id="balance">100</span> żetonów</div>
+
+  <div class="slot-machine" id="slots">
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+    <div class="slot">?</div>
+  </div>
+
+  <div class="result" id="result"></div>
+  <div id="clown-face"></div>
+  <canvas class="fireworks" id="fireworks"></canvas>
+
+  <!-- Mega Win Video -->
+  <video id="megaWinVideo" autoplay>
+    <source src="dexteredit.mp4" type="video/mp4">
+  </video>
+
+  <!-- Dźwięki -->
+  <audio id="win-sound" src="coin-recieved-230517.mp3"></audio>
+  <audio id="mega-win-sound" src="slot-machine-coin-payout-1-188227.mp3"></audio>
+  <audio id="lose-sound" src="sounds/lose.mp3"></audio>
+  <audio id="spin-sound" src="dice-sound-288763.mp3"></audio>
+
+  <!-- Skrypt -->
   <script>
-    const canvas = document.getElementById('wheel');
-    const ctx = canvas.getContext('2d');
-    const segments = ["Walter", "Jackpot", "Tony", "Spina", "Nic", "Joker", "Dexter", "Nagroda"];
-    const colors = ["yellow", "green", "deepskyblue", "blueviolet", "hotpink", "gray", "red", "orange"];
-    const segmentAngle = 360 / segments.length;
-    let rotation = 0;
-
-    const videoContainer = document.getElementById('video-container');
-    const videoElement = document.getElementById('video');
-    const spinButton = document.getElementById('spinButton');
-
-    // Filmy przypisane do segmentów
-    const videoFiles = {
-      "Walter": "ssstik.io_1744655771300.mp4",
-      "Jackpot": "ssstik.io_1744655875313.mp4",
-      "Tony": "ssstik.io_1744656044052.mp4",
-      "Spina": "dexteredit.mp4",
-      "Nic": "dexteredit.mp4",
-      "Joker": "dexteredit.mp4",
-      "Dexter": "dexteredit.mp4",
-      "Nagroda": "muzyka.mp4"
-    };
-
-    function drawWheel() {
-      for (let i = 0; i < segments.length; i++) {
-        const startAngle = (i * segmentAngle + rotation) * Math.PI / 180;
-        const endAngle = ((i + 1) * segmentAngle + rotation) * Math.PI / 180;
-
-        ctx.beginPath();
-        ctx.moveTo(250, 250);
-        ctx.arc(250, 250, 250, startAngle, endAngle);
-        ctx.fillStyle = colors[i];
-        ctx.fill();
-        ctx.stroke();
-
-        // Tekst
-        ctx.save();
-        ctx.translate(250, 250);
-        ctx.rotate(((i + 0.5) * segmentAngle + rotation) * Math.PI / 180);
-        ctx.textAlign = "right";
-        ctx.fillStyle = "black";
-        ctx.font = "bold 16px Arial";
-        ctx.fillText(segments[i], 240, 10);
-        ctx.restore();
+    window.addEventListener('load', () => {
+      const audio = document.getElementById("bg-music");
+      audio.muted = false;
+      audio.volume = 0.5;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => console.log("Dźwięk gra 🚀"))
+                   .catch(error => console.warn("Autoplay zablokowany:", error));
       }
+    });
+
+    let isPlaying = true;
+    function toggleAudio() {
+      const audio = document.getElementById("bg-music");
+      const button = document.getElementById("audio-toggle-btn");
+      if (isPlaying) {
+        audio.pause();
+        button.innerText = "▶️ Wznów Dźwięk";
+      } else {
+        audio.play();
+        button.innerText = "⏸️ Pauza Dźwięku";
+      }
+      isPlaying = !isPlaying;
     }
 
-    function spin() {
-      // Blokowanie przycisku na 6 sekund (cooldown)
-      spinButton.disabled = true;
+    const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
+    let balance = 100;
+    let cooldown = false;
+
+    function updateCasinoTheme() {
+      const casino = document.getElementById('casino').value;
+      const clown = document.getElementById('clown-face');
+      const imgMap = {
+        joker: 'joker.png',
+        lucky: 'lucky.png',
+        gold: 'gold.png',
+        retro: 'RODus.png'
+      };
+      clown.style.backgroundImage = url('${imgMap[casino]}');
+    }
+
+    function playSlot() {
+      if (cooldown) return;
+      cooldown = true;
+      document.getElementById('spin-btn').disabled = true;
       setTimeout(() => {
-        spinButton.disabled = false;  // Ponowne włączenie przycisku po 6 sekundach
-      }, 9000);
+        cooldown = false;
+        document.getElementById('spin-btn').disabled = false;
+      }, 3000);
 
-      const extraRotations = 360 * 5;
-      const randomAngle = Math.floor(Math.random() * 360);
-      const totalRotation = extraRotations + randomAngle;
+      const bet = parseInt(document.getElementById('bet').value);
+      if (bet > balance || bet <= 0) {
+        alert("Nie masz wystarczająco żetonów lub nieprawidłowa stawka.");
+        return;
+      }
 
-      let current = 0;
-      const spinSpeed = 10;
-      const interval = setInterval(() => {
-        current += spinSpeed;
-        rotation = (rotation + spinSpeed) % 360;
-        ctx.clearRect(0, 0, 500, 500);
-        drawWheel();
+      document.getElementById("spin-sound").play();
 
-        if (current >= totalRotation) {
-          clearInterval(interval);
-          const normalized = (360 - (rotation % 360)) % 360;
-          const index = Math.floor(normalized / segmentAngle) % segments.length;
-          const result = segments[index];
+      const slotElements = document.querySelectorAll('#slots .slot');
+      const result = [];
 
-          document.getElementById('result').innerText = Wylosowano: ${result};
-          
-          // Wyświetl film z opóźnieniem 5 sekund
-          setTimeout(() => {
-            const videoSrc = videoFiles[result];
-            videoElement.src = videoSrc;
-            videoContainer.style.display = 'block';  // Pokaż kontener z filmem
+      for (let i = 0; i < 5; i++) {
+        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+        slotElements[i].textContent = symbol;
+        result.push(symbol);
+      }
 
-            // Uruchomienie dźwięku po 5 sekundach od rozpoczęcia filmu
-            setTimeout(() => {
-              videoElement.play();  // Rozpoczyna odtwarzanie filmu i włącza dźwięk
-            }, 1000);
+      const counts = {};
+      result.forEach(sym => counts[sym] = (counts[sym] || 0) + 1);
 
-            // Zatrzymanie filmu po 7 sekundach
-            setTimeout(() => {
-              videoElement.pause();  // Zatrzymuje film po 7 sekundach
-              videoContainer.style.display = 'none';  // Ukrywa kontener z filmem
-            }, 7000);
-          }, 1000);  // 5-sekundowe opóźnienie przed rozpoczęciem filmu
+      let reward = 0;
+      let fireworks = false;
+      let winText = '';
+      let winClass = '';
+
+      for (let key in counts) {
+        if (counts[key] === 3) {
+          reward = bet * 2;
+          winText = '🎉 BIG WIN! 🎉';
+          winClass = 'big-win';
+          playSound('win-sound');
+        } else if (counts[key] === 4) {
+          reward = bet * 5;
+          winText = '💥 MEGA WIN!!! 💥';
+          winClass = 'mega-win';
+          fireworks = true;
+          playSound('mega-win-sound');
+          showMegaWinVideo();
+        } else if (counts[key] === 5) {
+          reward = bet * 10;
+          winText = '🔥🔥 ULTRA WIN!!!! 🔥🔥';
+          winClass = 'ultra-win';
+          fireworks = true;
+          playSound('mega-win-sound');
+          showMegaWinVideo();
         }
-      }, 10);
+      }
+
+      if (reward > 0) {
+        balance += reward;
+        showWinScreen(winText, winClass);
+        if (fireworks) startFireworks();
+      } else {
+        balance -= bet;
+        playSound('lose-sound');
+      }
+
+      document.getElementById('balance').textContent = balance;
     }
 
-    drawWheel();
-  </script>
+    function showWinScreen(text, cssClass) {
+      const winDiv = document.createElement('div');
+      winDiv.className = cssClass;
+      winDiv.textContent = text;
+      document.body.appendChild(winDiv);
+      setTimeout(() => {
+        winDiv.remove();
+      }, 3000);
+    }
 
+    function playSound(id) {
+      const sound = document.getElementById(id);
+      sound.pause();
+      sound.currentTime = 0;
+      sound.play();
+    }
+
+    function showMegaWinVideo() {
+      const video = document.getElementById('megaWinVideo');
+      video.style.display = 'block';
+      video.muted = false;
+      video.currentTime = 0;
+      video.play();
+      setTimeout(() => {
+        video.pause();
+        video.style.display = 'none';
+      }, 4000);
+    }
+
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    function startFireworks() {
+      let particles = Array.from({ length: 100 }, () => ({
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        dx: Math.random() * 10 - 5,
+        dy: Math.random() * 10 - 5,
+        life: 50
+      }));
+
+      const interval = setInterval(() => {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+          ctx.fillStyle = hsl(${Math.random() * 360}, 100%, 70%);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+          p.x += p.dx;
+          p.y += p.dy;
+          p.life--;
+        });
+
+        particles = particles.filter(p => p.life > 0);
+        if (particles.length === 0) {
+          clearInterval(interval);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }, 30);
+    }
+
+    updateCasinoTheme();
+  </script>
 </body>
 </html>
