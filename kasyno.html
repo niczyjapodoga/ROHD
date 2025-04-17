@@ -1,51 +1,186 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Kasyno</title>
-  <link rel="stylesheet" href="skrypt.css">
+  <meta charset="UTF-8" />
+  <title>Koło Fortuny</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #a8ff78, #78ffd6);
+      text-align: center;
+      font-family: 'Comic Sans MS', cursive;
+      overflow: hidden; /* Ukrywa przewijanie strony podczas wyświetlania filmu */
+    }
+    .wheel-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      margin: 40px auto;
+    }
+    .arrow {
+      position: absolute;
+      top: 50%;
+      right: -15px; /* Przesunięcie strzałki na prawą stronę */
+      transform: translateY(-50%); /* Wyrównanie do środka po osi Y */
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 25px solid white;
+      z-index: 10;
+    }
+    canvas {
+      border-radius: 50%;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      background: white;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
+    }
+    button:disabled {
+      background-color: gray; /* Kolor przycisku, gdy jest zablokowany */
+      cursor: not-allowed; /* Kursor wskazujący, że przycisk jest zablokowany */
+    }
+    #video-container {
+      display: none; /* Ukrywa kontener z filmem na początku */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 20;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    #result {
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Witaj w Kasynie!</h1>
 
-  <div class="casino-select">
-    <select id="casino" onchange="updateCasinoTheme()">
-      <option value="joker">Joker</option>
-      <option value="lucky">Lucky</option>
-      <option value="gold">Gold</option>
-      <option value="retro">Retro</option>
-    </select>
+  <h1>Koło Fortuny</h1>
+
+  <div class="wheel-container">
+    <div class="arrow"></div>
+    <canvas id="wheel" width="500" height="500"></canvas>
   </div>
 
-  <div class="slot-machine" id="slots">
-    <div class="slot">🍒</div>
-    <div class="slot">🔔</div>
-    <div class="slot">🍋</div>
-    <div class="slot">⭐</div>
-    <div class="slot">💎</div>
+  <button id="spinButton" onclick="spin()">Zakręć Kołem!</button>
+  <h2 id="result"></h2>
+
+  <!-- Kontener na film -->
+  <div id="video-container">
+    <video id="video" controls autoplay></video>
   </div>
 
-  <div class="balance-info">
-    <p>Twój balans: <span id="balance">100</span></p>
-    <input type="number" id="bet" min="1" max="100" value="10">
-    <button onclick="playSlot()">Zagraj!</button>
-  </div>
+  <script>
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const segments = ["Walter", "Jackpot", "Tony", "Spina", "Nic", "Joker", "Dexter", "Nagroda"];
+    const colors = ["yellow", "green", "deepskyblue", "blueviolet", "hotpink", "gray", "red", "orange"];
+    const segmentAngle = 360 / segments.length;
+    let rotation = 0;
 
-  <div id="clown-face"></div>
-  <p id="result"></p>
+    const videoContainer = document.getElementById('video-container');
+    const videoElement = document.getElementById('video');
+    const spinButton = document.getElementById('spinButton');
 
-  <div id="wheel-container">
-    <canvas id="wheelCanvas" width="400" height="400"></canvas>
-    <button onclick="spinWheel()">Zakręć Kołem!</button>
-    <h2 id="wheel-result"></h2>
-  </div>
+    // Filmy przypisane do segmentów
+    const videoFiles = {
+      "Walter": "ssstik.io_1744655771300.mp4",
+      "Jackpot": "ssstik.io_1744655875313.mp4",
+      "Tony": "ssstik.io_1744656044052.mp4",
+      "Spina": "dexteredit.mp4",
+      "Nic": "dexteredit.mp4",
+      "Joker": "dexteredit.mp4",
+      "Dexter": "dexteredit.mp4",
+      "Nagroda": "muzyka.mp4"
+    };
 
-  <div id="fireworks" class="fireworks"></div>
+    function drawWheel() {
+      for (let i = 0; i < segments.length; i++) {
+        const startAngle = (i * segmentAngle + rotation) * Math.PI / 180;
+        const endAngle = ((i + 1) * segmentAngle + rotation) * Math.PI / 180;
 
-  <video id="megaWinVideo" style="display: none" controls></video>
+        ctx.beginPath();
+        ctx.moveTo(250, 250);
+        ctx.arc(250, 250, 250, startAngle, endAngle);
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        ctx.stroke();
 
-  <script src="script.js"></script>
+        // Tekst
+        ctx.save();
+        ctx.translate(250, 250);
+        ctx.rotate(((i + 0.5) * segmentAngle + rotation) * Math.PI / 180);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "black";
+        ctx.font = "bold 16px Arial";
+        ctx.fillText(segments[i], 240, 10);
+        ctx.restore();
+      }
+    }
+
+    function spin() {
+      // Blokowanie przycisku na 6 sekund (cooldown)
+      spinButton.disabled = true;
+      setTimeout(() => {
+        spinButton.disabled = false;  // Ponowne włączenie przycisku po 6 sekundach
+      }, 9000);
+
+      const extraRotations = 360 * 5;
+      const randomAngle = Math.floor(Math.random() * 360);
+      const totalRotation = extraRotations + randomAngle;
+
+      let current = 0;
+      const spinSpeed = 10;
+      const interval = setInterval(() => {
+        current += spinSpeed;
+        rotation = (rotation + spinSpeed) % 360;
+        ctx.clearRect(0, 0, 500, 500);
+        drawWheel();
+
+        if (current >= totalRotation) {
+          clearInterval(interval);
+          const normalized = (360 - (rotation % 360)) % 360;
+          const index = Math.floor(normalized / segmentAngle) % segments.length;
+          const result = segments[index];
+
+          document.getElementById('result').innerText = Wylosowano: ${result};
+          
+          // Wyświetl film z opóźnieniem 5 sekund
+          setTimeout(() => {
+            const videoSrc = videoFiles[result];
+            videoElement.src = videoSrc;
+            videoContainer.style.display = 'block';  // Pokaż kontener z filmem
+
+            // Uruchomienie dźwięku po 5 sekundach od rozpoczęcia filmu
+            setTimeout(() => {
+              videoElement.play();  // Rozpoczyna odtwarzanie filmu i włącza dźwięk
+            }, 1000);
+
+            // Zatrzymanie filmu po 7 sekundach
+            setTimeout(() => {
+              videoElement.pause();  // Zatrzymuje film po 7 sekundach
+              videoContainer.style.display = 'none';  // Ukrywa kontener z filmem
+            }, 7000);
+          }, 1000);  // 5-sekundowe opóźnienie przed rozpoczęciem filmu
+        }
+      }, 10);
+    }
+
+    drawWheel();
+  </script>
+
 </body>
 </html>
-
-
