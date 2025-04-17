@@ -1,4 +1,4 @@
-// Slot Machine Logic
+<script>
 const symbols = ["🍒", "🔔", "🍋", "⭐", "💎"];
 let balance = 100;
 
@@ -12,7 +12,7 @@ function updateCasinoTheme() {
     case 'gold': img = 'gold.png'; break;
     case 'retro': img = 'retro.png'; break;
   }
-  clown.style.backgroundImage = `url('${img}')`;
+  clown.style.backgroundImage = url('${img}');
 }
 
 function playSlot() {
@@ -86,6 +86,7 @@ function playSlot() {
     setTimeout(() => {
       spinButton.disabled = false;
     }, 2000);
+
   }, 1000);
 }
 
@@ -110,7 +111,6 @@ function updateClownFace(balance) {
   }
 }
 
-// Fireworks Logic
 const canvas = document.getElementById('fireworks');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
@@ -132,7 +132,7 @@ function startFireworks() {
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => {
-      ctx.fillStyle = `hsl(${Math.random() * 360}, 100%, 70%)`;
+      ctx.fillStyle = hsl(${Math.random() * 360}, 100%, 70%);
       ctx.beginPath();
       ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
       ctx.fill();
@@ -148,7 +148,10 @@ function startFireworks() {
   }, 20);
 }
 
-// Koło fortuny
+updateCasinoTheme(); // uruchom od razu, by załadować obrazek
+
+  }
+}
 const wheelCanvas = document.getElementById('wheelCanvas');
 const ctxWheel = wheelCanvas.getContext('2d');
 const segments = [
@@ -199,22 +202,69 @@ function spinWheel() {
   function animate(time) {
     const progress = (time - start) / spinTime;
     if (progress < 1) {
-      angle = easeOutCubic(progress) * targetAngle;
-      drawWheel();
+      angle = easeOut(progress) * targetAngle;
+      drawRotatedWheel(angle);
       requestAnimationFrame(animate);
     } else {
+      angle = targetAngle;
+      drawRotatedWheel(angle);
+      showWheelResult(angle);
       spinning = false;
-      const segment = Math.floor((angle % (2 * Math.PI)) / (2 * Math.PI / segments.length));
-      document.getElementById('wheel-result').textContent = `Wynik: ${segments[segment]}`;
-      drawWheel();
     }
   }
 
   requestAnimationFrame(animate);
 }
 
-function easeOutCubic(t) {
+function drawRotatedWheel(currentAngle) {
+  ctxWheel.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+  ctxWheel.save();
+  ctxWheel.translate(200, 200);
+  ctxWheel.rotate(currentAngle);
+  ctxWheel.translate(-200, -200);
+  drawWheel();
+  ctxWheel.restore();
+}
+
+function easeOut(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
+function showWheelResult(finalAngle) {
+  const segmentAngle = (2 * Math.PI) / segments.length;
+  const index = Math.floor(((2 * Math.PI - (finalAngle % (2 * Math.PI))) % (2 * Math.PI)) / segmentAngle);
+  const resultText = segments[index];
+  document.getElementById('wheel-result').textContent = 🎯 Wylosowano: ${resultText};
+
+  if (resultText.includes('Edycja')) {
+    playWheelVideo(resultText);
+  }
+}
+
+function playWheelVideo(label) {
+  const video = document.getElementById('megaWinVideo');
+  let videoMap = {
+    'Edycja Dexter Morgan': 'dexteredit.mp4',
+    'Edycja Walter White': 'walter.mp4',
+    'Edycja Tony Montana': 'tony.mp4',
+    'Edycja Joker': 'jokeredit.mp4'
+  };
+  const src = videoMap[label];
+  if (src) {
+    video.querySelector('source').src = src;
+    video.load();
+    video.style.display = 'block';
+    video.muted = false;
+    video.currentTime = 0;
+    video.play();
+    video.onended = () => {
+      video.style.display = 'none';
+    };
+  }
+}
+
 drawWheel();
+
+
+function showWinVideo(type) { const videoMap = { 'big-win': 'dexteredit.mp4', 'mega-win': 'Download (5).mp4', 'ultra-win': 'ssstik.io_1744655771300.mp4' }; const video = document.createElement('video'); video.src = videoMap[type]; video.autoplay = true; video.muted = false; video.className = 'win-video'; video.style.position = 'fixed'; video.style.top = '50%'; video.style.left = '50%'; video.style.transform = 'translate(-50%, -50%)'; video.style.zIndex = '9999'; video.style.maxWidth = '80%'; video.style.border = '5px solid yellow'; video.style.borderRadius = '20px'; video.style.boxShadow = '0 0 20px white'; document.body.appendChild(video); video.onended = () => { video.remove(); }; }
+</script>
